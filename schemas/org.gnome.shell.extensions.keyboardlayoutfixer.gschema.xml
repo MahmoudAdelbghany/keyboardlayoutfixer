@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.keyboardlayoutfixer" 
+            path="/org/gnome/shell/extensions/keyboardlayoutfixer/">
+        <key name="convert-text-shortcut" type="as">
+            <default><![CDATA[['<Super>k']]]></default>
+            <summary>Shortcut to convert selected text</summary>
+            <description>Keyboard shortcut to convert text between layouts</description>
+        </key>
+    </schema>
+</schemalist>

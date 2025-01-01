@@ -1,0 +1,9 @@
+{
+    "uuid": "keyboardlayoutfixer@mahmoud.a.rageh@gmail.com",
+    "name": "Keyboard Layout Fixer",
+    "description": "Converts text between Arabic and English keyboard layouts",
+    "shell-version": ["43"],
+    "url": "",
+    "version": 1,
+    "gettext-domain": "keyboardlayoutfixer"
+}
