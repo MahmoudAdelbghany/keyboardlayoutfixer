@@ -26,8 +26,7 @@ function fillPreferencesWindow(window) {
     // Create a row for the shortcut setting
     const shortcutRow = new Adw.ActionRow({
         title: 'Conversion Shortcut',
-        subtitle: 'Click to set new shortcut (Current: ' + 
-                 settings.get_strv('convert-text-shortcut')[0] + ')'
+        subtitle: 'Current: ' + settings.get_strv('convert-text-shortcut')[0]
     });
 
     // Create a shortcut button
@@ -36,33 +35,52 @@ function fillPreferencesWindow(window) {
         valign: Gtk.Align.CENTER
     });
 
+    let isListening = false;
+    let eventController = null;
+
     shortcutButton.connect('clicked', () => {
-        // Show "Press a key" in subtitle
-        shortcutRow.subtitle = 'Press a key combination...';
-        
-        // Create a new grab handle
-        let eventController = new Gtk.EventControllerKey();
-        
-        // Add the controller to the window
-        window.add_controller(eventController);
-        
-        // Connect to key-pressed event
-        eventController.connect('key-pressed', (controller, keyval, keycode, state) => {
-            // Get the key combination as string
-            let mask = state & Gtk.accelerator_get_default_mod_mask();
-            let accelerator = Gtk.accelerator_name(keyval, mask);
-            
-            if (accelerator) {
-                // Update settings
-                settings.set_strv('convert-text-shortcut', [accelerator]);
-                // Update subtitle
-                shortcutRow.subtitle = 'Current: ' + accelerator;
-                // Remove the controller
+        if (isListening) {
+            // If already listening, cancel it
+            if (eventController) {
                 window.remove_controller(eventController);
+                eventController = null;
             }
+            shortcutButton.label = 'Set Shortcut';
+            shortcutRow.subtitle = 'Current: ' + settings.get_strv('convert-text-shortcut')[0];
+            isListening = false;
+        } else {
+            // Start listening for new shortcut
+            shortcutButton.label = 'Cancel';
+            shortcutRow.subtitle = 'Press a key combination...';
+            isListening = true;
             
-            return true;
-        });
+            // Create a new grab handle
+            eventController = new Gtk.EventControllerKey();
+            
+            // Add the controller to the window
+            window.add_controller(eventController);
+            
+            // Connect to key-pressed event
+            eventController.connect('key-pressed', (controller, keyval, keycode, state) => {
+                // Get the key combination as string
+                let mask = state & Gtk.accelerator_get_default_mod_mask();
+                let accelerator = Gtk.accelerator_name(keyval, mask);
+                
+                if (accelerator) {
+                    // Update settings
+                    settings.set_strv('convert-text-shortcut', [accelerator]);
+                    // Update UI
+                    shortcutButton.label = 'Set Shortcut';
+                    shortcutRow.subtitle = 'Current: ' + accelerator;
+                    // Remove the controller
+                    window.remove_controller(eventController);
+                    eventController = null;
+                    isListening = false;
+                }
+                
+                return true;
+            });
+        }
     });
 
     // Add the button to the row
