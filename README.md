@@ -16,8 +16,10 @@ gnome-extensions install --force keyboardlayoutfixer@mahmoud.a.rageh@gmail.com.s
    
   
 ### Usage
+- **Type**: Go wild, type your heart out.
 - **Default Shortcut**: The default shortcut to activate the layout fix is `Super (Win key) + K`. 
 - **Adjust Shortcut**: You can change this in the GNOME Extensions app .
+- The Fixed text is now shown in pop up and copied to clipboard.
 
 ## TODO 
 - **Clean Up the Code**: Right now, it's more spaghetti than my nonna's kitchen. It's my first thing with JS, so if you see it, don't laugh too hard. (Code was done in 2 hours, okay?)
