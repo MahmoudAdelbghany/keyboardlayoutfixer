@@ -3,7 +3,6 @@
 const { GObject, St, Gio, GLib } = imports.gi;
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray;
-const Clipboard = St.Clipboard.get_default();
 const CLIPBOARD_TYPE = St.ClipboardType.CLIPBOARD;
 const SELECTION_TYPE = St.ClipboardType.PRIMARY;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -18,12 +17,6 @@ const ENGLISH_TO_ARABIC = {
     'd': 'ي', 'f': 'ب', 'g': 'ل', 'h': 'ا', 'j': 'ت', 'k': 'ن', 'l': 'م',
     ';': 'ك', "'": 'ط', 'z': 'ئ', 'x': 'ء', 'c': 'ؤ', 'v': 'ر', 'b': 'لا',
     'n': 'ى', 'm': 'ة', ',': 'و', '.': 'ز', '/': 'ظ',
-    // // Add uppercase mappings
-    // 'Q': 'َ', 'W': 'ً', 'E': 'ُ', 'R': 'ٌ', 'T': 'لإ', 'Y': 'إ', 'U': '`',
-    // 'I': '÷', 'O': '×', 'P': '؛', '{': '<', '}': '>', 'A': 'ِ', 'S': 'ٍ',
-    // 'D': ']', 'F': '[', 'G': 'لأ', 'H': 'أ', 'J': 'ـ', 'K': '،', 'L': '/',
-    // ':': ':', '"': '"', 'Z': '~', 'X': 'ْ', 'C': '}', 'V': '{', 'B': 'لآ',
-    // 'N': 'آ', 'M': '\'', '<': ',', '>': '.', '?': '؟'
 };
 
 const ARABIC_TO_ENGLISH = Object.fromEntries(
@@ -33,12 +26,16 @@ const ARABIC_TO_ENGLISH = Object.fromEntries(
 class Extension {
     constructor() {
         this._settings = null;
+        this._clipboard = null;
     }
 
     enable() {
         log('Keyboard Layout Fixer: enabling...');
         this._settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.keyboardlayoutfixer');
-        
+
+        // Initialize Clipboard instance
+        this._clipboard = St.Clipboard.get_default();
+
         // Add keyboard shortcut
         Main.wm.addKeybinding(
             'convert-text-shortcut',
@@ -54,21 +51,30 @@ class Extension {
     }
 
     disable() {
+        Main.wm.removeKeybinding('convert-text-shortcut');
         if (this._settings) {
-            Main.wm.removeKeybinding('convert-text-shortcut');
             this._settings = null;
         }
+
+        // Nullify Clipboard instance
+        this._clipboard = null;
+
         log('Keyboard Layout Fixer: disabled');
     }
 
     _getSelectedText(callback) {
+        if (!this._clipboard) {
+            callback('');
+            return;
+        }
+
         // First try to get the primary selection (highlighted text)
-        Clipboard.get_text(SELECTION_TYPE, (_, primaryText) => {
+        this._clipboard.get_text(SELECTION_TYPE, (_, primaryText) => {
             if (primaryText) {
                 callback(primaryText);
             } else {
                 // If no selection, try clipboard content
-                Clipboard.get_text(CLIPBOARD_TYPE, (_, clipboardText) => {
+                this._clipboard.get_text(CLIPBOARD_TYPE, (_, clipboardText) => {
                     callback(clipboardText || '');
                 });
             }
@@ -88,7 +94,7 @@ class Extension {
                 let convertedText = this._convertText(text);
                 if (convertedText) {
                     // Copy converted text to clipboard
-                    Clipboard.set_text(CLIPBOARD_TYPE, convertedText);
+                    this._clipboard.set_text(CLIPBOARD_TYPE, convertedText);
                     
                     // Show notification
                     this._showNotification('Text Converted', convertedText);
