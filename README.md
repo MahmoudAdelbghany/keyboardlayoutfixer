@@ -7,11 +7,11 @@ Are you tired of typing a whole novel in English only to realize you're on the A
 
 ## How to Use This ?
 ### Installation
-1. **Download**: Get the zip from [here](https://github.com/MahmoudAdelbghany/keyboardlayoutfixer/releases/download/V1.0.0/keyboardlayoutfixer@mahmoud.a.rageh@gmail.com.shell-extension.zip).
+1. **Download**: Get the zip from [here](https://github.com/MahmoudAdelbghany/keyboardlayoutfixer/releases/download/V1.0.1/keyboardlayoutfixer@mahmoudadelbghany.github.io.shell-extension.zip).
 2. **Install**: Navigate to your download directory and run:
    
 ```shell
-gnome-extensions install --force keyboardlayoutfixer@mahmoud.a.rageh@gmail.com.shell-extension.zip
+gnome-extensions install --force keyboardlayoutfixer@mahmoudadelbghany.github.io.shell-extension.zip
 ```
    
   
