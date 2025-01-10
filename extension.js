@@ -115,7 +115,9 @@ class Extension {
         
         return text.split('').map(char => {
             if (isEnglish) {
-                return ENGLISH_TO_ARABIC[char] || char;
+                // Convert capital letters to lowercase before looking up in the mapping
+                const lowerChar = char.toLowerCase();
+                return ENGLISH_TO_ARABIC[lowerChar] || char;
             } else {
                 return ARABIC_TO_ENGLISH[char] || char;
             }
